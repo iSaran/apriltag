@@ -9,6 +9,8 @@
 
 #include <apriltag.h>
 #include <tag36h11.h>
+#include <ros/ros.h>
+#include <ros/package.h>
 
 
 void makePattern36H11(const std::string &tagFolder, const std::string &outSvg, const cv::Size &boardSize, float tileSize, float tileOffset)
@@ -64,9 +66,30 @@ void makePattern36H11(const std::string &tagFolder, const std::string &outSvg, c
 
 int main(int argc, char** argv)
 {
-   makePattern36H11("/home/marios/Marios/code/tod/makePattern/3rdparty/apriltag/tag36h11/",
-                    "/home/marios/Marios/code/tod/makePattern/pattern.svg",
-                    cv::Size(1, 1), 0.05, 0.0);
+    // std::string package_path = ;
 
-   return 0;
+    ros::init(argc, argv, "make_pattern");
+    ros::NodeHandle n;
+
+    std::string pkg_path = ros::package::getPath("apriltag_detector");
+    std::string tag_path = pkg_path + "/3rdparty/apriltag/tag36h11/";
+    std::string svg_path = pkg_path + "/output/pattern.svg";
+
+    std::vector<int> board_size(2);
+    n.getParam("apriltag_detector_params/make_pattern/board_size", board_size);
+
+    double tile_size;
+    n.getParam("apriltag_detector_params/make_pattern/tile_size", tile_size);
+
+    double tile_offset;
+    n.getParam("apriltag_detector_params/make_pattern/tile_offset", tile_offset);
+    
+    ROS_INFO_STREAM("Creating pattern with:");
+    ROS_INFO_STREAM("path: " << svg_path);
+    ROS_INFO_STREAM("board size: " << board_size.at(0) << ", " << board_size.at(1));
+    ROS_INFO_STREAM("tile size: " << tile_size);
+    ROS_INFO_STREAM("tile offset: " << tile_offset);
+
+    makePattern36H11(tag_path, svg_path, cv::Size(board_size.at(0), board_size.at(1)), tile_size, tile_offset); 
+    return 0;
 }

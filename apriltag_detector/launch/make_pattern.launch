@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+<node name="apriltag_detector" pkg="apriltag_detector" type="apriltag_detector_make_pattern" output="screen"/>
+<rosparam command="load" param="apriltag_detector_params" file="$(find apriltag_detector)/config/params.yml" />
+</launch>
