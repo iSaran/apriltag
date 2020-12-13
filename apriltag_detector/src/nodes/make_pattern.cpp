@@ -76,13 +76,13 @@ int main(int argc, char** argv)
     std::string svg_path = pkg_path + "/output/pattern.svg";
 
     std::vector<int> board_size(2);
-    n.getParam("apriltag_detector_params/make_pattern/board_size", board_size);
+    n.getParam("apriltag_config/pattern/board_size", board_size);
 
     double tile_size;
-    n.getParam("apriltag_detector_params/make_pattern/tile_size", tile_size);
+    n.getParam("apriltag_config/pattern/tile_size", tile_size);
 
     double tile_offset;
-    n.getParam("apriltag_detector_params/make_pattern/tile_offset", tile_offset);
+    n.getParam("apriltag_config/pattern/tile_offset", tile_offset);
     
     ROS_INFO_STREAM("Creating pattern with:");
     ROS_INFO_STREAM("path: " << svg_path);

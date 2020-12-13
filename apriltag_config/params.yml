@@ -1,0 +1,33 @@
+
+pattern:
+  board_size: [1, 1]
+  tile_size: 0.08
+  tile_offset: 0.0
+  tile_border: 0.01
+
+track:
+  plot_points:
+    use: true
+    topic: "apriltag_track/tag_points"
+
+camera:
+  use: "xtion"
+  xtion:
+    fx: 543.951475
+    fy: 545.531957
+    cx: 320
+    cy: 240
+    size: [640, 480]
+    tf_name: "asus_xtion_depth_optical_frame"
+    topic_rgb: "/asus_xtion/rgb/image_raw"
+    topic_depth: "fdafdas"
+  realsense:
+    fx: 543.951475
+    fy: 545.531957
+    cx: 320
+    cy: 240
+    size: [640, 480]
+    tf_name: "fdas"
+    topic_rgb: "fdafdas"
+    topic_depth: "fdafdas"
+

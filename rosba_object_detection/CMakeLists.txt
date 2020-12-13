@@ -52,6 +52,14 @@ target_link_libraries(${PROJECT_NAME}_detect
 
 )
 
+add_executable(tracker src/track.cpp)
+add_dependencies(tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(tracker
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+
 ## Run roslint with `catkin_make roslint`
 # Filter out errors with respect C++11 (for ROS-indigo)
 set(ROSLINT_CPP_OPTS "--filter=-build/c++11,-runtime/references,-build/include_what_you_use")

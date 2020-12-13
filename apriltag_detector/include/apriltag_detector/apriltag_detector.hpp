@@ -22,22 +22,17 @@
 
 using namespace cv_tools;
 
+struct AprilTagParameters
+{
+    cv::Size board_size_;
+    float tag_size_;
+    float tag_border_;
+
+    AprilTagParameters(const std::vector<int>& size, float tag_size, float tag_border);
+};
 
 class AprilTagDetector{
 public:
-    struct AprilTagParameters
-    {
-        cv::Size board_size_;
-        float tag_size_;
-        float tag_border_;
-
-        AprilTagParameters()
-        {
-            board_size_ = cv::Size(7, 10);
-            tag_size_ = 0.04;
-            tag_border_ = 0.01;
-        }
-    };
 
     struct Result
     {
@@ -45,17 +40,20 @@ public:
         cv::Point2f pts[4];
     };
 
-    AprilTagDetector();
+    // AprilTagDetector();
+
+    AprilTagDetector(const AprilTagParameters& params);
 
     void detect(const cv::Mat &img, std::vector<AprilTagDetector::Result> &results);
 
     bool findPoints(std::vector<cv::Point2f> &pts, std::vector<cv::Point3f> &objs,
-                    cv::Mat &img, const AprilTagParameters &params);
+                    const cv::Mat &img);
 
     void drawPoints(cv::Mat &img, std::vector<cv::Point2f> &pts);
 
 private:
     apriltag_detector* td_;
+    AprilTagParameters params;
 };
 
 

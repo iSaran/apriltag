@@ -109,20 +109,24 @@ bool estimatePose(std_srvs::Trigger::Request &req,
     // cv::imshow("rgb", rgb);
     // cv::waitKey();
 
-    double alpha = 1.0;
-    double beta = -50.0;
+    // double alpha = 1.0;
+    // double beta = -50.0;
     // rgb.convertTo(rgb, -1, alpha, beta);
     // cv::imshow("rgb_converted", rgb);
     // cv::waitKey();
 
     // detect apriltags
-    AprilTagDetector::AprilTagParameters apriltagParams;
-    AprilTagDetector tagDetector;
+    std::vector<int> size(2);
+    size.at(0) = 7;
+    size.at(1) = 10;
+
+    AprilTagParameters apriltagParams(size, float(0.04), float(0.01));
+    AprilTagDetector tagDetector(apriltagParams);
     PoseEstimator estimator;
 
     std::vector<cv::Point2f> pts;
     std::vector<cv::Point3f> objs;
-    if(tagDetector.findPoints(pts, objs, rgb, apriltagParams) == false)
+    if(tagDetector.findPoints(pts, objs, rgb) == false)
     {
       std::cout << "Cannot detect tags!" << std::endl;
       res.success = false;
@@ -175,8 +179,8 @@ bool estimatePose(std_srvs::Trigger::Request &req,
       {
         ROS_WARN("%s",ex.what());
         ros::Duration(0.5).sleep();
-          ROS_ERROR("Camera frame wasn't found!!!!");
-          res.success = false;
+        ROS_ERROR("Camera frame wasn't found!!!!");
+        res.success = false;
       }
 
       // Transform object to world

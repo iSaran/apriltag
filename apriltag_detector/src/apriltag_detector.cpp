@@ -1,6 +1,15 @@
 #include "apriltag_detector/apriltag_detector.hpp"
 
-AprilTagDetector::AprilTagDetector()
+
+AprilTagParameters::AprilTagParameters(const std::vector<int>& size, float tag_size, float tag_border)
+{
+    board_size_ = cv::Size(size.at(0), size.at(1));
+    tag_size_ = tag_size;
+    tag_border_ = tag_border;
+}
+
+AprilTagDetector::AprilTagDetector(const AprilTagParameters& params)
+    : params(params)
 {
     apriltag_family_t* tf = tag36h11_create();
 
@@ -57,7 +66,7 @@ void AprilTagDetector::detect(const cv::Mat &img, std::vector<AprilTagDetector::
 
 
 bool AprilTagDetector::findPoints(std::vector<cv::Point2f> &pts, std::vector<cv::Point3f> &objs,
-                                  cv::Mat &img, const AprilTagParameters &params)
+                                  const cv::Mat &img)
 {
     std::vector<AprilTagDetector::Result> results;
     detect(img,results);
@@ -78,17 +87,17 @@ bool AprilTagDetector::findPoints(std::vector<cv::Point2f> &pts, std::vector<cv:
         }
 
         //!< store 3d points
-        int row = res.id / params.board_size_.width;
-        int col = res.id % params.board_size_.width;
+        int row = res.id / this->params.board_size_.width;
+        int col = res.id % this->params.board_size_.width;
 
-        float x = col * (params.tag_size_ + params.tag_border_);
-        float y = row * (params.tag_size_ + params.tag_border_);
+        float x = col * (this->params.tag_size_ + this->params.tag_border_);
+        float y = row * (this->params.tag_size_ + this->params.tag_border_);
 
         //!< counter-clockwise winding order
         objs.push_back(cv::Point3f(x, y, 0.0));
-        objs.push_back(cv::Point3f(x + params.tag_size_, y, 0.0));
-        objs.push_back(cv::Point3f(x + params.tag_size_ , y + params.tag_size_, 0.0));
-        objs.push_back(cv::Point3f(x , y + params.tag_size_, 0.0));
+        objs.push_back(cv::Point3f(x + this->params.tag_size_, y, 0.0));
+        objs.push_back(cv::Point3f(x + this->params.tag_size_ , y + this->params.tag_size_, 0.0));
+        objs.push_back(cv::Point3f(x , y + this->params.tag_size_, 0.0));
     }
 
     // drawPoints(img, pts);
