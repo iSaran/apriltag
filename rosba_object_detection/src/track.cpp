@@ -38,7 +38,7 @@
 #include <thread>
 
 // apriltag_detector
-#include "apriltag_detector/apriltag_detector.hpp"
+#include <apriltag_core/detector.h>
 
 //opencv
 #include <opencv/highgui.h>
@@ -66,7 +66,6 @@ geometry_msgs::TransformStamped toROS(const Eigen::Affine3d& frame,
   transformStamped.transform.rotation.z = quat.z();
   transformStamped.transform.rotation.w = quat.w();
   return transformStamped;
-
 }
 
 sensor_msgs::ImagePtr toROS(const cv::Mat& img, const std_msgs::Header& header, const std::string& encoding)
@@ -120,12 +119,12 @@ Eigen::Affine3d getPoseFromTF(const std::string& frame_base, const std::string& 
 /**
  * Input: RGB image, Output: POse of apriltag
  */
-Eigen::Affine3d estimatePose(const sensor_msgs::ImageConstPtr& rgb_ros, const cv::Mat& rgb, const PinholeCamera& camera,
-                             const AprilTagParameters& params, bool plot=false)
+Eigen::Affine3d estimatePose(const sensor_msgs::ImageConstPtr& rgb_ros, const cv::Mat& rgb, const cv_tools::PinholeCamera& camera,
+                             const apriltag_core::AprilTagParameters& params, bool plot=false)
 {
   // Detect tag
-  AprilTagDetector tag_detector(params);
-  PoseEstimator estimator;
+  apriltag_core::AprilTagDetector tag_detector(params);
+  apriltag_core::PoseEstimator estimator;
   std::vector<cv::Point2f> pts;
   std::vector<cv::Point3f> objs;
   bool points_found;
@@ -188,7 +187,7 @@ int main(int argc, char** argv)
   n.getParam("apriltag_config/camera/" + camera_name + "/cx", cx);
   n.getParam("apriltag_config/camera/" + camera_name + "/cy", cy);
   n.getParam("apriltag_config/camera/" + camera_name + "/size", size);
-  PinholeCamera camera(fx, fy, cx, cy, cv::Size(size.at(0), size.at(1)));
+  cv_tools::PinholeCamera camera(fx, fy, cx, cy, cv::Size(size.at(0), size.at(1)));
   ROS_INFO_STREAM("Start tracking for " << camera_name << " camera, with intrinsics: "
                    << fx << ", " << fy << ", " << cx << ", " << cy
                    << ", size: " <<  size.at(0) << "x" << size.at(1));
@@ -207,7 +206,7 @@ int main(int argc, char** argv)
   n.getParam("apriltag_config/pattern/board_size", board_size);
   n.getParam("apriltag_config/pattern/tile_size", tile_size);
   n.getParam("apriltag_config/pattern/tile_border", tile_border);
-  AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
+  apriltag_core::AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
   ROS_INFO_STREAM("Tag params: board_size: " << board_size.at(0) << "x" << board_size.at(1)
                   << ", tile_size" << tile_size * 100 << "cm, "
                   << ", tile_border" << tile_border * 100 << "cm");

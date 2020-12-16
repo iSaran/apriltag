@@ -20,7 +20,7 @@ camera:
     size: [640, 480]
     tf_name: "asus_xtion_depth_optical_frame"
     topic_rgb: "/asus_xtion/rgb/image_raw"
-    topic_depth: "fdafdas"
+    topic_depth: "/asus_xtion/depth/image_raw"
   realsense:
     fx: 543.951475
     fy: 545.531957
@@ -31,3 +31,28 @@ camera:
     topic_rgb: "fdafdas"
     topic_depth: "fdafdas"
 
+calibration:
+  plot: true
+  setup: "lwr_1"
+  lwr_1:
+    board_size: [1, 1]
+    tile_size: 0.105
+    tile_offset: 0.0
+    tile_border: 0.01
+    frame: "lwr"
+    n_tags: 3
+    id0:
+      A: [-0.278, -0.289, 0]
+      B: [-0.278, -0.396, 0]
+      C: [-0.385, -0.396, 0]
+      D: [-0.385, -0.289, 0]
+    id1:
+      A: [-0.089, -0.415, 0]
+      B: [-0.089, -0.522, 0]
+      C: [-0.194, -0.522, 0]
+      D: [-0.194, -0.415, 0]
+    id2:
+      A: [-0.232, -0.496, 0]
+      B: [-0.232, -0.598, 0]
+      C: [-0.339, -0.598, 0]
+      D: [-0.339, -0.496, 0]

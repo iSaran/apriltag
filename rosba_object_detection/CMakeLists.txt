@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   sensor_msgs
   cv_bridge
-  apriltag_detector
+  apriltag_core
   pcl_conversions
   rosba_msgs
 )
@@ -43,14 +43,14 @@ include_directories(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 
-add_executable(${PROJECT_NAME}_detect src/detect.cpp)
-add_dependencies(${PROJECT_NAME}_detect ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_detect
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
-  ${PCL_LIBRARIES}
+# add_executable(${PROJECT_NAME}_detect src/detect.cpp)
+# add_dependencies(${PROJECT_NAME}_detect ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(${PROJECT_NAME}_detect
+#   ${catkin_LIBRARIES}
+#   ${OpenCV_LIBRARIES}
+#   ${PCL_LIBRARIES}
 
-)
+# )
 
 add_executable(tracker src/track.cpp)
 add_dependencies(tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

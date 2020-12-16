@@ -36,7 +36,7 @@
 #include <thread>
 
 // apriltag_detector
-#include "apriltag_detector/apriltag_detector.hpp"
+#include <apriltag_detector/detector.h>
 
 //opencv
 #include <opencv/highgui.h>
