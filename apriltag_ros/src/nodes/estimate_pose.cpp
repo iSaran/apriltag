@@ -1,4 +1,4 @@
-#include <apriltag_core/detector.h>
+#include <apriltag_ros/detector.h>
 
 int main()
 {
@@ -10,9 +10,9 @@ int main()
   size.at(0) = 7;
   size.at(1) = 10;
 
-  apriltag_core::AprilTagParameters apriltagParams(size, float(0.04), float(0.01));
-  apriltag_core::AprilTagDetector tagDetector(apriltagParams);
-  apriltag_core::PoseEstimator estimator;
+  apriltag_ros::AprilTagParameters apriltagParams(size, float(0.04), float(0.01));
+  apriltag_ros::AprilTagDetector tagDetector(apriltagParams);
+  apriltag_ros::PoseEstimator estimator;
 
   std::vector<cv::Point2f> pts;
   std::vector<cv::Point3f> objs;

@@ -25,7 +25,7 @@
 #include <sensor_msgs/Image.h>
 #include <cv_bridge/cv_bridge.h>
 #include <Eigen/Dense>
-#include <apriltag_core/calibrator.h>
+#include <apriltag_ros/calibrator.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_ros/static_transform_broadcaster.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -40,7 +40,7 @@
 // #include <thread>
 
 // // apriltag_detector
-// #include <apriltag_core/detector.h>
+// #include <apriltag_ros/detector.h>
 
 // //opencv
 // #include <opencv/highgui.h>
@@ -162,7 +162,7 @@ int main(int argc, char** argv)
   n.getParam("apriltag_config/pattern/board_size", board_size);
   n.getParam("apriltag_config/pattern/tile_size", tile_size);
   n.getParam("apriltag_config/pattern/tile_border", tile_border);
-  apriltag_core::AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
+  apriltag_ros::AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
 
   bool plot;
   n.getParam("apriltag_config/calibration/plot", plot);
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
   sensor_msgs::ImageConstPtr depth = ros::topic::waitForMessage<sensor_msgs::Image>(camera_depth_topic, ros::Duration(1.0));
   cv::Mat depth_cv = fromROS(depth, true);
 
-  apriltag_core::Calibrator calibrator(apriltag_params, fx, fy, cx, cy, 3);
+  apriltag_ros::Calibrator calibrator(apriltag_params, fx, fy, cx, cy, 3);
   Eigen::Affine3f transformation = calibrator.run(rgb_cv, depth_cv, robot_points, plot);
   transformation.translation()[0] += 0.03;
   transformation.translation()[1] += 0.03;

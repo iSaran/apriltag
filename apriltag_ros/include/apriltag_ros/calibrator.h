@@ -1,11 +1,11 @@
-#ifndef APRILTAG_CORE_CALIBRATOR_H
-#define APRILTAG_CORE_CALIBRATOR_H
+#ifndef APRILTAG_ROS_CALIBRATOR_H
+#define APRILTAG_ROS_CALIBRATOR_H
 
 #include <opencv/cv.h>
 #include <Eigen/Dense>
-#include <apriltag_core/detector.h>
+#include <apriltag_ros/detector.h>
 
-namespace apriltag_core
+namespace apriltag_ros
 {
 class Calibrator
 {
@@ -30,5 +30,5 @@ private:
     int nmarkers_;
     AprilTagDetector tag_detector;
 };
-}  // namespace apriltag_core
-#endif  // APRILTAG_CORE_CALIBRATOR_H
+}  // namespace apriltag_ros
+#endif  // APRILTAG_ROS_CALIBRATOR_H

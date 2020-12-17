@@ -1,7 +1,7 @@
-#include <apriltag_core/detector.h>
+#include <apriltag_ros/detector.h>
 
 
-namespace apriltag_core
+namespace apriltag_ros
 {
 AprilTagParameters::AprilTagParameters(const std::vector<int>& size, float tag_size, float tag_border)
 {

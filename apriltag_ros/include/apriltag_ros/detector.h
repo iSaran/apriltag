@@ -1,5 +1,5 @@
-#ifndef APRILTAG_CORE_DETECTOR_H
-#define APRILTAG_CORE_DETECTOR_H
+#ifndef APRILTAG_ROS_DETECTOR_H
+#define APRILTAG_ROS_DETECTOR_H
 
 
 // system
@@ -20,7 +20,7 @@
 #include "cv_tools/geometry/pinhole_camera.hpp"
 
 
-namespace apriltag_core
+namespace apriltag_ros
 {
 struct AprilTagParameters
 {
@@ -97,4 +97,4 @@ private:
 }
 
 
-#endif  // APRILTAG_CORE_DETECTOR_H
+#endif  // APRILTAG_ROS_DETECTOR_H

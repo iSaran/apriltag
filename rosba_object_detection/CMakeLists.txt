@@ -18,7 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   sensor_msgs
   cv_bridge
-  apriltag_core
+  apriltag_ros
   pcl_conversions
   rosba_msgs
 )

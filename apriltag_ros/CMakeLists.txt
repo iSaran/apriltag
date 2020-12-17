@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(apriltag_core)
+project(apriltag_ros)
 
 # Use C++  for initialise an std::vector without a constructor
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -14,6 +14,7 @@ set(CMAKE_BUILD_TYPE Debug)
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Apriltag REQUIRED)
+find_package(PCL 1.4 REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -24,6 +25,7 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   geometry_msgs
   tf2_ros
+  pcl_conversions
 )
 
 message("!!!!!!!!!!!!!!! Include dires from CMAKELISTS" ${Apriltag_INCLUDE_DIRS})
@@ -71,9 +73,9 @@ target_link_libraries(${PROJECT_NAME}_estimate_pose
   ${Apriltag_LIBRARIES}
 )
 
-add_executable(${PROJECT_NAME}_make_pattern src/nodes/make_pattern.cpp ${SRCS})
-add_dependencies(${PROJECT_NAME}_make_pattern ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(${PROJECT_NAME}_make_pattern
+add_executable(make_pattern src/nodes/make_pattern.cpp ${SRCS})
+add_dependencies(make_pattern ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(make_pattern
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${Apriltag_LIBRARIES}
@@ -92,3 +94,12 @@ target_link_libraries(calibrate
 set(ROSLINT_CPP_OPTS "--filter=-build/c++11,-runtime/references,-build/include_what_you_use")
 # Roslint macro
 roslint_cpp()
+
+add_executable(tracker src/track.cpp ${SRCS})
+add_dependencies(tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(tracker
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${Apriltag_LIBRARIES}
+)

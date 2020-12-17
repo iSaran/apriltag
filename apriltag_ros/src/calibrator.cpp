@@ -1,8 +1,8 @@
-#include <apriltag_core/calibrator.h>
+#include <apriltag_ros/calibrator.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 
-namespace apriltag_core
+namespace apriltag_ros
 {
 Calibrator::Calibrator(const AprilTagParameters& tag_params, double fx, double fy, double cx, double cy, double nmarkers)
     : tag_detector(tag_params)

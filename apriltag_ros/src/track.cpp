@@ -29,7 +29,6 @@
 #include <cv_bridge/cv_bridge.h>
 #include <std_srvs/Trigger.h>
 #include <tf2_ros/transform_listener.h>
-#include <rosba_msgs/ModifyPose.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include "cv_tools/util/rgbd_utils.hpp"
 #include <stdexcept>
