@@ -89,6 +89,14 @@ target_link_libraries(calibrate
   ${Apriltag_LIBRARIES}
 )
 
+add_executable(publish_calibration src/publish_calibration.cpp ${SRCS})
+add_dependencies(publish_calibration ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(publish_calibration
+  ${catkin_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  ${Apriltag_LIBRARIES}
+)
+
 ## Run roslint with `catkin_make roslint`
 # Filter out errors with respect C++11 (for ROS-indigo)
 set(ROSLINT_CPP_OPTS "--filter=-build/c++11,-runtime/references,-build/include_what_you_use")

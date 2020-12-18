@@ -1,4 +1,3 @@
-
 pattern:
   board_size: [1, 1]
   tile_size: 0.08
@@ -18,7 +17,7 @@ camera:
     cx: 320
     cy: 240
     size: [640, 480]
-    tf_name: "asus_xtion_depth_optical_frame"
+    tf_name: "asus_xtion_rgb_optical_frame"
     topic_rgb: "/asus_xtion/rgb/image_raw"
     topic_depth: "/asus_xtion/depth/image_raw"
   realsense:
@@ -39,7 +38,7 @@ calibration:
     tile_size: 0.105
     tile_offset: 0.0
     tile_border: 0.01
-    frame: "lwr"
+    base_frame: "world"  # Frame that the points of the tags are expressed to
     n_tags: 3
     id0:
       A: [-0.278, -0.289, 0]

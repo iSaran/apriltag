@@ -86,20 +86,24 @@ geometry_msgs::TransformStamped toROS(const Eigen::Affine3f& frame,
 }
 
 
+
+
 void publishTF(const Eigen::Affine3f& frame,
                const std::string& base_frame,
                const std::string& target_frame)
 {
-  ROS_INFO_STREAM("publishTF: " << base_frame << " , " << target_frame);
   static tf2_ros::StaticTransformBroadcaster br;
   geometry_msgs::TransformStamped transformStamped = toROS(frame, base_frame, target_frame);
   br.sendTransform(transformStamped);
 }
 
 
+
+
+
+
 template<class Matrix>
-void writeBinary(const std::string& filename, const Matrix& matrix)
-{
+void writeBinary(const std::string& filename, const Matrix& matrix){
     std::ofstream out(filename, std::ios::out | std::ios::binary | std::ios::trunc);
     typename Matrix::Index rows=matrix.rows(), cols=matrix.cols();
     out.write((char*) (&rows), sizeof(typename Matrix::Index));
@@ -110,8 +114,7 @@ void writeBinary(const std::string& filename, const Matrix& matrix)
 
 
 template<class Matrix>
-void readBinary(const std::string& filename, Matrix& matrix)
-{
+void readBinary(const std::string& filename, Matrix& matrix){
     std::ifstream in(filename, std::ios::in | std::ios::binary);
     typename Matrix::Index rows=0, cols=0;
     in.read((char*) (&rows),sizeof(typename Matrix::Index));
@@ -127,106 +130,30 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "apriltag_object_tracker");
   ros::NodeHandle n;
 
-  // Which camera we use
   std::string camera_name;
   n.getParam("apriltag_config/camera/use", camera_name);
 
-  // Read intrinsics of camera from parameter server
-  double fx, fy, cx, cy;
-  std::vector<int> size;
-  n.getParam("apriltag_config/camera/" + camera_name + "/fx", fx);
-  n.getParam("apriltag_config/camera/" + camera_name + "/fy", fy);
-  n.getParam("apriltag_config/camera/" + camera_name + "/cx", cx);
-  n.getParam("apriltag_config/camera/" + camera_name + "/cy", cy);
-  n.getParam("apriltag_config/camera/" + camera_name + "/size", size);
-  ROS_INFO_STREAM("Calibrating with " << camera_name << " camera, with intrinsics: "
-                   << fx << ", " << fy << ", " << cx << ", " << cy
-                   << ", size: " <<  size.at(0) << "x" << size.at(1));
+  std::string camera_frame;
+  n.getParam("apriltag_config/camera/" + camera_name + "/tf_name", camera_frame);
 
-  // Read topic to read RGB, depth
-  std::string camera_rgb_topic;
-  n.getParam("apriltag_config/camera/" + camera_name + "/topic_rgb", camera_rgb_topic);
-
-  std::string camera_depth_topic;
-  n.getParam("apriltag_config/camera/" + camera_name + "/topic_depth", camera_depth_topic);
-
-
-  // sensor_msgs::ImageConstPtr rgb = ros::topic::waitForMessage<sensor_msgs::Image>(camera_rgb_topic, ros::Duration(1.0));
-  // cv::Mat rgb_cv = fromROS(rgb);
-
-
-  // Read robot measurements for calibration
   std::string setup;
   n.getParam("apriltag_config/calibration/setup", setup);
-  int n_tags;
-  n.getParam("apriltag_config/calibration/" + setup + "/n_tags", n_tags);
-  std::vector<Eigen::Vector3f> robot_points(n_tags * 4);
-  std::vector<double> robot_point;
-  for (int i = 0; i < n_tags; i++)
-  {
-    n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/A", robot_point);
-    robot_points.at(i * 4 + 0)[0] = robot_point.at(0);
-    robot_points.at(i * 4 + 0)[1] = robot_point.at(1);
-    robot_points.at(i * 4 + 0)[2] = robot_point.at(2);
 
-    n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/B", robot_point);
-    robot_points.at(i * 4 + 1)[0] = robot_point.at(0);
-    robot_points.at(i * 4 + 1)[1] = robot_point.at(1);
-    robot_points.at(i * 4 + 1)[2] = robot_point.at(2);
+  std::string base_frame;
+  n.getParam("apriltag_config/calibration/" + setup + "/base_frame", base_frame);
 
-    n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/C", robot_point);
-    robot_points.at(i * 4 + 2)[0] = robot_point.at(0);
-    robot_points.at(i * 4 + 2)[1] = robot_point.at(1);
-    robot_points.at(i * 4 + 2)[2] = robot_point.at(2);
+  Eigen::Affine3f transformation;
 
-    n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/D", robot_point);
-    robot_points.at(i * 4 + 3)[0] = robot_point.at(0);
-    robot_points.at(i * 4 + 3)[1] = robot_point.at(1);
-    robot_points.at(i * 4 + 3)[2] = robot_point.at(2);
-  }
-
-  std::vector<int> board_size;
-  float tile_size, tile_border;
-  n.getParam("apriltag_config/pattern/board_size", board_size);
-  n.getParam("apriltag_config/pattern/tile_size", tile_size);
-  n.getParam("apriltag_config/pattern/tile_border", tile_border);
-  apriltag_ros::AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
-
-  bool plot;
-  n.getParam("apriltag_config/calibration/plot", plot);
-
-  // Start calibration
-
-  sensor_msgs::ImageConstPtr rgb = ros::topic::waitForMessage<sensor_msgs::Image>(camera_rgb_topic, ros::Duration(1.0));
-  cv::Mat rgb_cv = fromROS(rgb);
-
-  sensor_msgs::ImageConstPtr depth = ros::topic::waitForMessage<sensor_msgs::Image>(camera_depth_topic, ros::Duration(1.0));
-  cv::Mat depth_cv = fromROS(depth, true);
-
-  apriltag_ros::Calibrator calibrator(apriltag_params, fx, fy, cx, cy, 3);
-  Eigen::Affine3f transformation = calibrator.run(rgb_cv, depth_cv, robot_points, plot);
-  
-  // Hardcoded fixes
-  transformation.translation()[0] += 0.03;
-  transformation.translation()[1] += 0.03;
-
-  // Write calibration to file
+  // Read calibration from file
   std::string file_path = ros::package::getPath("apriltag_ros") + "/output/calibration_transform.bin";
-  writeBinary<Eigen::Matrix4f>(file_path, transformation.matrix());
-  file_path = ros::package::getPath("apriltag_ros") + "/output/calibration_transform.txt";
-  std::ofstream file(file_path);
-  if (file.is_open())
+  readBinary<Eigen::Matrix4f>(file_path, transformation.matrix());
+  ros::Rate rate(200);
+  while(ros::ok())
   {
-    file << transformation.matrix() << std::endl;
-    ROS_INFO_STREAM("Written calibration transform to file: " << file_path);
+    ROS_INFO_STREAM("Publishing calibration matrix of frames: " << base_frame << " , " << camera_frame);
+    publishTF(transformation, base_frame, camera_frame);
+    rate.sleep();
   }
-
-  // Serialize transformation to store in parameter server
-  // std::vector<double> serialized_tran(4 * 4);
-  // for (int i = 0; i < )
-  // while(ros::ok())
-  // publishTF(transformation, "world", "asus_xtion_rgb_optical_frame");
-  // std::cout << "Calibration transformation: " << std::endl << transformation << std::endl;
 
   return 0;
 }

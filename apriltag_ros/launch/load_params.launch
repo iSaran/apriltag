@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <launch>
-<rosparam command="load" param="apriltag_ros" file="$(find apriltag_ros)/config/params.yml" />
+<rosparam command="load" param="apriltag_config" file="$(find apriltag_ros)/config/params.yml" />
 </launch>

@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "make_pattern");
     ros::NodeHandle n;
 
-    std::string pkg_path = ros::package::getPath("apriltag_detector");
+    std::string pkg_path = ros::package::getPath("apriltag_ros");
     std::string tag_path = pkg_path + "/3rdparty/apriltag/tag36h11/";
     std::string svg_path = pkg_path + "/output/pattern.svg";
 
