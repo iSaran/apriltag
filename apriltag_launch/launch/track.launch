@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-<include file="$(find apriltag_launch)/launch/load_params.launch" />
-<node name="tracker" pkg="rosba_object_detection" type="tracker" output="screen"/>
-</launch>

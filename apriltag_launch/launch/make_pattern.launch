@@ -1,5 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-<include file="$(find apriltag_launch)/launch/load_params.launch" />
-<node name="apriltag_detector" pkg="apriltag_detector" type="apriltag_detector_make_pattern" output="screen"/>
-</launch>
