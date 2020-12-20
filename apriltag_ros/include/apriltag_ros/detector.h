@@ -31,6 +31,14 @@ struct AprilTagParameters
     AprilTagParameters(const std::vector<int>& size, float tag_size, float tag_border);
 };
 
+/**
+ * \brief Wrapper class of Apriltag for detecting a tag
+ * 
+ * \param params The apriltag parameters
+ * \param refine_pose Parameter for better accuracy with the cost of
+ * performance. Set to 0 for fast detection with low accuracy and to 1 for slow
+ * detection with high accuracy
+ */
 class AprilTagDetector
 {
 public:
@@ -43,7 +51,7 @@ public:
 
     // AprilTagDetector();
 
-    AprilTagDetector(const AprilTagParameters& params);
+    AprilTagDetector(const AprilTagParameters& params, int refine_pose = 0);
 
     void detect(const cv::Mat &img, std::vector<AprilTagDetector::Result> &results);
 

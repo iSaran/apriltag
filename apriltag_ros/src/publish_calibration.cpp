@@ -150,7 +150,7 @@ int main(int argc, char** argv)
   ros::Rate rate(200);
   while(ros::ok())
   {
-    ROS_INFO_STREAM("Publishing calibration matrix of frames: " << base_frame << " , " << camera_frame);
+    // ROS_INFO_STREAM("Publishing calibration matrix of frames: " << base_frame << " , " << camera_frame);
     publishTF(transformation, base_frame, camera_frame);
     rate.sleep();
   }

@@ -9,7 +9,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ ${CMAKE_MODULE_PATH} )
 message("!!!!!!!!!!!!!!! Package CMAKE_CURRENT_SOURCE_DIR" ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Build in debug mode
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 find_package(OpenCV 3 REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -26,13 +26,14 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   tf2_ros
   pcl_conversions
+  autharl_core
 )
 
 message("!!!!!!!!!!!!!!! Include dires from CMAKELISTS" ${Apriltag_INCLUDE_DIRS})
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
   INCLUDE_DIRS include ${Apriltag_INCLUDE_DIRS}
-  CATKIN_DEPENDS cv_tools
+  CATKIN_DEPENDS cv_tools autharl_core
   DEPENDS OpenCV Apriltag
 )
 

@@ -52,6 +52,8 @@
   <build_depend>roscpp</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>cv_tools</build_depend>
+  <build_depend>autharl_core</build_depend>
+  <exec_depend>autharl_core</exec_depend>
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>

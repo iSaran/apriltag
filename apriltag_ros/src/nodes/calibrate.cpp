@@ -31,6 +31,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <fstream>
 #include <ros/package.h>
+#include <autharl_core>
 
 // // #include <std_srvs/Trigger.h>
 // // #include <tf2_ros/transform_listener.h>
@@ -121,6 +122,8 @@ void readBinary(const std::string& filename, Matrix& matrix)
     in.close();
 }
 
+// void publishPointsRviz()
+
 int main(int argc, char** argv)
 {
   // Initialize the ROS node
@@ -154,7 +157,7 @@ int main(int argc, char** argv)
   // sensor_msgs::ImageConstPtr rgb = ros::topic::waitForMessage<sensor_msgs::Image>(camera_rgb_topic, ros::Duration(1.0));
   // cv::Mat rgb_cv = fromROS(rgb);
 
-
+  arl::viz::RVisualizer rviz("world");
   // Read robot measurements for calibration
   std::string setup;
   n.getParam("apriltag_config/calibration/setup", setup);
@@ -168,21 +171,25 @@ int main(int argc, char** argv)
     robot_points.at(i * 4 + 0)[0] = robot_point.at(0);
     robot_points.at(i * 4 + 0)[1] = robot_point.at(1);
     robot_points.at(i * 4 + 0)[2] = robot_point.at(2);
+    rviz.visualizeSphere(robot_points.at(i * 4 + 0), 0.01, rviz_visual_tools::colors::RED);
 
     n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/B", robot_point);
     robot_points.at(i * 4 + 1)[0] = robot_point.at(0);
     robot_points.at(i * 4 + 1)[1] = robot_point.at(1);
     robot_points.at(i * 4 + 1)[2] = robot_point.at(2);
+    rviz.visualizeSphere(robot_points.at(i * 4 + 1), 0.01, rviz_visual_tools::colors::GREEN);
 
     n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/C", robot_point);
     robot_points.at(i * 4 + 2)[0] = robot_point.at(0);
     robot_points.at(i * 4 + 2)[1] = robot_point.at(1);
     robot_points.at(i * 4 + 2)[2] = robot_point.at(2);
+    rviz.visualizeSphere(robot_points.at(i * 4 + 2), 0.01, rviz_visual_tools::colors::BLUE);
 
     n.getParam("apriltag_config/calibration/" + setup + "/id" + std::to_string(i) + "/D", robot_point);
     robot_points.at(i * 4 + 3)[0] = robot_point.at(0);
     robot_points.at(i * 4 + 3)[1] = robot_point.at(1);
     robot_points.at(i * 4 + 3)[2] = robot_point.at(2);
+    rviz.visualizeSphere(robot_points.at(i * 4 + 3), 0.01, rviz_visual_tools::colors::BLACK);
   }
 
   std::vector<int> board_size;
@@ -207,8 +214,8 @@ int main(int argc, char** argv)
   Eigen::Affine3f transformation = calibrator.run(rgb_cv, depth_cv, robot_points, plot);
   
   // Hardcoded fixes
-  transformation.translation()[0] += 0.03;
-  transformation.translation()[1] += 0.03;
+  // transformation.translation()[0] += 0.03;
+  // transformation.translation()[1] += 0.03;
 
   // Write calibration to file
   std::string file_path = ros::package::getPath("apriltag_ros") + "/output/calibration_transform.bin";

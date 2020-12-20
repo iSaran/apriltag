@@ -33,10 +33,6 @@
 #include "cv_tools/util/rgbd_utils.hpp"
 #include <stdexcept>
 
-// system
-#include <thread>
-
-// apriltag_detector
 #include <apriltag_ros/detector.h>
 
 //opencv
@@ -122,11 +118,12 @@ Eigen::Affine3d estimatePose(const sensor_msgs::ImageConstPtr& rgb_ros, const cv
                              const apriltag_ros::AprilTagParameters& params, bool plot=false)
 {
   // Detect tag
-  apriltag_ros::AprilTagDetector tag_detector(params);
+  apriltag_ros::AprilTagDetector tag_detector(params, 0);
   apriltag_ros::PoseEstimator estimator;
   std::vector<cv::Point2f> pts;
   std::vector<cv::Point3f> objs;
   bool points_found;
+
   points_found = tag_detector.findPoints(pts, objs, rgb);
 
 
@@ -236,7 +233,6 @@ int main(int argc, char** argv)
     }
     
     publishTF(pose, camera_tf_name, "target_object");
-    ros::spinOnce();
     rate.sleep();
   }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <launch>
 <include file="$(find apriltag_ros)/launch/load_params.launch" />
+<include file="$(find apriltag_ros)/launch/publish_calibration.launch" />
 <node name="tracker" pkg="apriltag_ros" type="tracker" output="screen"/>
 </launch>

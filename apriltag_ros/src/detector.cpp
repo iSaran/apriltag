@@ -1,4 +1,5 @@
 #include <apriltag_ros/detector.h>
+#include <chrono>
 
 
 namespace apriltag_ros
@@ -10,7 +11,7 @@ AprilTagParameters::AprilTagParameters(const std::vector<int>& size, float tag_s
     tag_border_ = tag_border;
 }
 
-AprilTagDetector::AprilTagDetector(const AprilTagParameters& params)
+AprilTagDetector::AprilTagDetector(const AprilTagParameters& params, int refine_pose)
     : params(params)
 {
     apriltag_family_t* tf = tag36h11_create();
@@ -19,17 +20,24 @@ AprilTagDetector::AprilTagDetector(const AprilTagParameters& params)
     apriltag_detector_add_family(td_, tf);
 
     td_->debug = 0;
-    td_->refine_pose = 1;
+    td_->refine_pose = refine_pose;
     td_->nthreads = 4;
 }
 
 
 void AprilTagDetector::detect(const cv::Mat &img, std::vector<AprilTagDetector::Result> &results)
 {
+
+    using clock = std::chrono::steady_clock;
+    clock::time_point start = clock::now();
+
     cv::Mat gray;
     //!< convert to gray scale
     if(img.type() == CV_8UC1) gray = img;
     else cv::cvtColor(img, gray, CV_BGR2GRAY);
+
+
+
 
     //!< convert to uint8
     //!< https://msdn.microsoft.com/en-us/library/windows/desktop/aa473780%28v=vs.85%29.aspx
@@ -44,6 +52,13 @@ void AprilTagDetector::detect(const cv::Mat &img, std::vector<AprilTagDetector::
 
     //!< detect tags from an image
     zarray_t* detections = apriltag_detector_detect(td_, im_u8);
+    
+    clock::time_point end = clock::now();
+    // std::chrono::duration<double> execution_time = end - start;  // in seconds
+    std::chrono::duration<double, std::milli> execution_time = end - start;  // in ms
+    double k = execution_time.count();
+    std::cout << "find points took " << k << " ms" << std::endl;
+
 
     for(int i = 0; i < zarray_size(detections); i++)
     {
