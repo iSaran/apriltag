@@ -27,6 +27,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_ros
   pcl_conversions
   autharl_core
+  message_filters
 )
 
 message("!!!!!!!!!!!!!!! Include dires from CMAKELISTS" ${Apriltag_INCLUDE_DIRS})

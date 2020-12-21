@@ -10,8 +10,7 @@ int main()
   size.at(0) = 7;
   size.at(1) = 10;
 
-  apriltag_ros::AprilTagParameters apriltagParams(size, float(0.04), float(0.01));
-  apriltag_ros::AprilTagDetector tagDetector(apriltagParams);
+  apriltag_ros::AprilTagDetector tagDetector(cv::Size(640, 480), float(0.04), float(0.01), 1);
   apriltag_ros::PoseEstimator estimator;
 
   std::vector<cv::Point2f> pts;

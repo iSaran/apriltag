@@ -54,7 +54,6 @@
 cv::Mat fromROS(const sensor_msgs::ImageConstPtr& img, bool depth=false)
 {
   cv_bridge::CvImageConstPtr bgr_cv = cv_bridge::toCvCopy(img, img->encoding);
-  std::cout << "endodinggggggggggggggg: " << img->encoding << std::endl;
   cv::Mat rgb;
   if (depth)
   {
@@ -123,6 +122,28 @@ void readBinary(const std::string& filename, Matrix& matrix)
 }
 
 // void publishPointsRviz()
+cv::Mat alignDepth(const cv::Mat& depth, const apriltag_ros::PinholeCamera& camera)
+{
+  cv::Mat depth_translated = cv::Mat::zeros(camera.size_y, camera.size_x, CV_16UC1);
+  for (int i = 0; i < camera.size_x; i++)
+  {
+    for (int j =0; j < camera.size_y; j++)
+    {
+      float depth_value = (float)depth.at<unsigned short>(j, i);
+      // if (depth_value > 0)
+      // {
+        Eigen::Vector2f img(i, j);
+        Eigen::Vector3f point3d = camera.backProject(img, depth_value);
+        point3d(0) -= 0.025;
+        Eigen::Vector3f rgb_xy = camera.project(point3d);
+        if (rgb_xy(0) > 0 && rgb_xy(1) > 0 && rgb_xy(0) <= camera.size_x && rgb_xy(1) <= camera.size_y)
+        {
+          depth_translated.at<unsigned short>((int)rgb_xy(1), (int)rgb_xy(0)) = rgb_xy(2);
+        }
+    }
+  }
+  return depth_translated;
+}
 
 int main(int argc, char** argv)
 {
@@ -145,6 +166,8 @@ int main(int argc, char** argv)
   ROS_INFO_STREAM("Calibrating with " << camera_name << " camera, with intrinsics: "
                    << fx << ", " << fy << ", " << cx << ", " << cy
                    << ", size: " <<  size.at(0) << "x" << size.at(1));
+  
+  apriltag_ros::PinholeCamera camera(fx, fy, cx, cy, size.at(0), size.at(1));
 
   // Read topic to read RGB, depth
   std::string camera_rgb_topic;
@@ -152,7 +175,6 @@ int main(int argc, char** argv)
 
   std::string camera_depth_topic;
   n.getParam("apriltag_config/camera/" + camera_name + "/topic_depth", camera_depth_topic);
-
 
   // sensor_msgs::ImageConstPtr rgb = ros::topic::waitForMessage<sensor_msgs::Image>(camera_rgb_topic, ros::Duration(1.0));
   // cv::Mat rgb_cv = fromROS(rgb);
@@ -197,7 +219,6 @@ int main(int argc, char** argv)
   n.getParam("apriltag_config/pattern/board_size", board_size);
   n.getParam("apriltag_config/pattern/tile_size", tile_size);
   n.getParam("apriltag_config/pattern/tile_border", tile_border);
-  apriltag_ros::AprilTagParameters apriltag_params(board_size, tile_size, tile_border);
 
   bool plot;
   n.getParam("apriltag_config/calibration/plot", plot);
@@ -209,10 +230,13 @@ int main(int argc, char** argv)
 
   sensor_msgs::ImageConstPtr depth = ros::topic::waitForMessage<sensor_msgs::Image>(camera_depth_topic, ros::Duration(1.0));
   cv::Mat depth_cv = fromROS(depth, true);
+  cv::Mat depth_aligned = alignDepth(depth_cv, camera);
 
-  apriltag_ros::Calibrator calibrator(apriltag_params, fx, fy, cx, cy, 3);
-  Eigen::Affine3f transformation = calibrator.run(rgb_cv, depth_cv, robot_points, plot);
-  
+  apriltag_ros::Calibrator calibrator(cv::Size(board_size.at(0),
+                                      board_size.at(1)), tile_size, tile_border, fx, fy, cx, cy, size.at(0),
+                                      size.at(1), 3);
+  Eigen::Affine3f transformation = calibrator.run(rgb_cv, depth_aligned, robot_points, plot);
+
   // Hardcoded fixes
   // transformation.translation()[0] += 0.03;
   // transformation.translation()[1] += 0.03;
